@@ -14,7 +14,7 @@ export function Home() {
             <ChartDashboard />
           </div>
         </div>
-        <div className="md:flex h-full w-full ">
+        <div className="h-full md:w-full ">
           <TableDashboard />
         </div>
       </div>

@@ -13,7 +13,7 @@ import {
 } from "./ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import type { ChartConfig } from "./ui/chart";
-import { Skeleton } from "./ui/skeleton";
+//import { Skeleton } from "./ui/skeleton";
 
 export const description = "A stacked area chart";
 

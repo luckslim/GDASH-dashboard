@@ -18,6 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
 const invoices = [
   {
@@ -89,25 +91,59 @@ export function TableDashboard() {
                     <TableCell>{invoice.paymentStatus}</TableCell>
                     <TableCell>{invoice.paymentMethod}</TableCell>
                     <TableCell>NE</TableCell>
-                    <TableCell className="text-right">
-                      80
-                    </TableCell>
+                    <TableCell className="text-right">80</TableCell>
                   </TableRow>
                 </AlertDialogTrigger>
                 <AlertDialogTrigger asChild></AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
+                    <AlertDialogTitle className="flex justify-between">
+                      Dados do Clima{" "}
+                      <Badge
+                        className="bg-gray-500 text-blue-50 font-bold"
+                        variant={"secondary"}
+                      >
+                        22/02/2025
+                      </Badge>
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
+                      <div className="grid gap-1">
+                        <Button
+                          className="flex justify-between"
+                          variant={"link"}
+                        >
+                          <span>Temperatura</span>
+                          <span>30 graus</span>{" "}
+                        </Button>
+                        <Button
+                          className="flex justify-between"
+                          variant={"link"}
+                        >
+                          <span>velocidade do vento</span>
+                          <span>30km/h</span>{" "}
+                        </Button>
+                        <Button
+                          className="flex justify-between"
+                          variant={"link"}
+                        >
+                          <span>Direção do vento</span>
+                          <span>NE</span>{" "}
+                        </Button>
+                        <Button
+                          className="flex justify-between"
+                          variant={"link"}
+                        >
+                          <span>Cod Meteorológico</span>
+                          <span>80</span>{" "}
+                        </Button>
+                      </div>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction>Continue</AlertDialogAction>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction className="bg-red-800 hover:bg-red-500">
+                      Deletar
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

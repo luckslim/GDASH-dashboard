@@ -1,7 +1,14 @@
 import { PopoverDashboad } from "./popover-dashboad";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
 
 import { DiamondIcon, MapPinIcon } from "@phosphor-icons/react";
+import { Spinner } from "./ui/spinner";
 //import { Skeleton } from "./ui/skeleton";
 
 export function CardUser() {
@@ -31,19 +38,34 @@ export function CardUser() {
           </div>
         </CardContent>
       </Card>
-      <span
-        className="flex items-center justify-around p-5 rounded-full text-white
-   bg-black
-    shadow-[0_0_15px_rgb(255, 255, 255)]
-    animate-pulse
-    hover:shadow-[0_0_25px_#6cf5ff]
-    hover:brightness-125
-    hover:animate-none
-    transition-all duration-300"
+
+      <Accordion
+        type="single"
+        collapsible
+        className="w-100"
+        defaultValue="item-1"
       >
-        <DiamondIcon size={32} weight="fill" />
-        Previsão do tempo com IA
-      </span>
+        <AccordionItem
+          className="grid gap-5 items-center justify-center"
+          value="item-1"
+        >
+          <AccordionTrigger className="flex items-center justify-around p-2 rounded-full text-white bg-black shadow-[0_0_15px_rgb(255, 255, 255)] animate-pulse hover:shadow-[0_0_25px_#6cf5ff] hover:brightness-125 hover:animate-none transition-all duration-300">
+            <DiamondIcon size={32} weight="fill" />
+            Previsão do tempo com IA
+          </AccordionTrigger>
+          <AccordionContent className="text-center text-gray-500">
+            <div className="flex gap-2 items-center justify-center text-lg">
+              <Spinner />
+              criando previsão...
+            </div>
+            <p className="text-gray-500 font-bold ">
+              Our flagship product combines cutting-edge technology with sleek
+              design. Built with premium materials, it offers unparalleled
+              performance and reliability.
+            </p>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }

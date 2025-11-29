@@ -1,6 +1,4 @@
 "use client";
-
-import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -13,26 +11,45 @@ import {
 } from "./ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import type { ChartConfig } from "./ui/chart";
+import { TimerIcon } from "@phosphor-icons/react";
 //import { Skeleton } from "./ui/skeleton";
 
 export const description = "A stacked area chart";
 
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+  { hour: "00:00", temperatura: 22, velocidadeVento: 10 },
+  { hour: "01:00", temperatura: 21, velocidadeVento: 12 },
+  { hour: "02:00", temperatura: 20, velocidadeVento: 11 },
+  { hour: "03:00", temperatura: 19, velocidadeVento: 9 },
+  { hour: "04:00", temperatura: 18, velocidadeVento: 8 },
+  { hour: "05:00", temperatura: 19, velocidadeVento: 10 },
+  { hour: "06:00", temperatura: 20, velocidadeVento: 12 },
+  { hour: "07:00", temperatura: 22, velocidadeVento: 14 },
+  { hour: "08:00", temperatura: 24, velocidadeVento: 15 },
+  { hour: "09:00", temperatura: 26, velocidadeVento: 16 },
+  { hour: "10:00", temperatura: 27, velocidadeVento: 17 },
+  { hour: "11:00", temperatura: 29, velocidadeVento: 18 },
+  { hour: "12:00", temperatura: 30, velocidadeVento: 20 },
+  { hour: "13:00", temperatura: 31, velocidadeVento: 21 },
+  { hour: "14:00", temperatura: 32, velocidadeVento: 22 },
+  { hour: "15:00", temperatura: 31, velocidadeVento: 20 },
+  { hour: "16:00", temperatura: 30, velocidadeVento: 18 },
+  { hour: "17:00", temperatura: 28, velocidadeVento: 17 },
+  { hour: "18:00", temperatura: 26, velocidadeVento: 15 },
+  { hour: "19:00", temperatura: 25, velocidadeVento: 14 },
+  { hour: "20:00", temperatura: 24, velocidadeVento: 12 },
+  { hour: "21:00", temperatura: 23, velocidadeVento: 11 },
+  { hour: "22:00", temperatura: 23, velocidadeVento: 10 },
+  { hour: "23:00", temperatura: 22, velocidadeVento: 9 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  temperatura: {
+    label: "Temperatura (°C)",
     color: "var(--chart-1)",
   },
-  mobile: {
-    label: "Mobile",
+  velocidadeVento: {
+    label: "Velocidade do Vento (km/h)",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
@@ -44,10 +61,8 @@ export function ChartDashboard() {
         {/* <Skeleton className="p-2 bg-gray-200 rounded-lg w-[200px]" />
         <Skeleton className="p-2 bg-gray-200 rounded-lg w-[300px]" />
         <Skeleton className="p-2 bg-gray-200 rounded-lg w-[200px]" /> */}
-        <CardTitle> Area Chart - Stacked</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
+        <CardTitle>Temperatura e Velocidade do Vento</CardTitle>
+        <CardDescription>gráfico referente a cada hora</CardDescription>
       </CardHeader>
       <CardContent>
         {/* <Skeleton className="p-50 bg-gray-200 rounded-lg" /> */}
@@ -62,30 +77,29 @@ export function ChartDashboard() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="hour"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Area
-              dataKey="mobile"
+              dataKey="temperatura"
               type="natural"
-              fill="var(--color-mobile)"
+              fill="var(--chart-1)"
               fillOpacity={0.4}
-              stroke="var(--color-mobile)"
+              stroke="var(--chart-1)"
               stackId="a"
             />
             <Area
-              dataKey="desktop"
+              dataKey="velocidadeVento"
               type="natural"
-              fill="var(--color-desktop)"
+              fill="var(--chart-2)"
               fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              stroke="var(--chart-2)"
               stackId="a"
             />
           </AreaChart>
@@ -95,10 +109,10 @@ export function ChartDashboard() {
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 leading-none font-medium">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+              24 Horas <TimerIcon />
             </div>
             <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              January - June 2024
+              Relatório a cada hora do dia
             </div>
           </div>
         </div>

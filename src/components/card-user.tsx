@@ -13,8 +13,8 @@ import { Spinner } from "./ui/spinner";
 
 export function CardUser() {
   return (
-    <div className="grid gap-5">
-      <Card className="w-full max-w-sm">
+    <div className="grid gap-5 justify-center items-center">
+      <Card className="w-full">
         <CardHeader>
           <PopoverDashboad />
           <CardDescription>Bem Vindo ao Dashboad!</CardDescription>
@@ -30,7 +30,7 @@ export function CardUser() {
               className="rounded-lg"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235198.68142636976!2d-43.44598205!3d-22.91413075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9bde559108a05b%3A0x50dc426c672fd24e!2sRio%20de%20Janeiro%2C%20RJ!5e0!3m2!1spt-BR!2sbr!4v1764326813307!5m2!1spt-BR!2sbr"
               width="100%"
-              height="250"
+              height="250px"
               loading="lazy"
             ></iframe>
             {/* <Skeleton className="p-2 bg-gray-200 rounded-lg w-[200px]" />

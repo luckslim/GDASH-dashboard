@@ -20,6 +20,8 @@ import {
 } from "./ui/table";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { ButtonGroup } from "./ui/button-group";
+import { FileArrowDownIcon } from "@phosphor-icons/react";
 
 const invoices = [
   {
@@ -68,90 +70,98 @@ const invoices = [
 
 export function TableDashboard() {
   return (
-    <div className="grid gap-3">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[200px]">Data</TableHead>
-            <TableHead className="w-[200px]">Temperatura</TableHead>
-            <TableHead className="w-[200px]">Velocidade do Vento</TableHead>
-            <TableHead className="w-[200px]">Direção do Vento</TableHead>
-            <TableHead className="text-right">Código meteorológico</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {invoices.map((invoice) => (
-            <>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <TableRow key={invoice.invoice}>
-                    <TableCell className="font-medium">
-                      {invoice.invoice}
-                    </TableCell>
-                    <TableCell>{invoice.paymentStatus}</TableCell>
-                    <TableCell>{invoice.paymentMethod}</TableCell>
-                    <TableCell>NE</TableCell>
-                    <TableCell className="text-right">80</TableCell>
-                  </TableRow>
-                </AlertDialogTrigger>
-                <AlertDialogTrigger asChild></AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="flex justify-between">
-                      Dados do Clima{" "}
-                      <Badge
-                        className="bg-gray-500 text-blue-50 font-bold"
-                        variant={"secondary"}
-                      >
-                        22/02/2025
-                      </Badge>
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      <div className="grid gap-1">
-                        <Button
-                          className="flex justify-between"
-                          variant={"link"}
+    <>
+      <div className="flex items-center justify-end">
+        <ButtonGroup>
+          <Button variant={"outline"}>Baixar arquivo CSV <FileArrowDownIcon size={32} /></Button>
+          <Button variant={"outline"}>Baixar arquivo XLSX <FileArrowDownIcon size={32} /></Button>
+        </ButtonGroup>
+      </div>
+      <div className="grid gap-3">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[200px]">Data</TableHead>
+              <TableHead className="w-[200px]">Temperatura</TableHead>
+              <TableHead className="w-[200px]">Velocidade do Vento</TableHead>
+              <TableHead className="w-[200px]">Direção do Vento</TableHead>
+              <TableHead className="text-right">Código meteorológico</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {invoices.map((invoice) => (
+              <>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <TableRow key={invoice.invoice}>
+                      <TableCell className="font-medium">
+                        {invoice.invoice}
+                      </TableCell>
+                      <TableCell>{invoice.paymentStatus}</TableCell>
+                      <TableCell>{invoice.paymentMethod}</TableCell>
+                      <TableCell>NE</TableCell>
+                      <TableCell className="text-right">80</TableCell>
+                    </TableRow>
+                  </AlertDialogTrigger>
+                  <AlertDialogTrigger asChild></AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="flex justify-between">
+                        Dados do Clima{" "}
+                        <Badge
+                          className="bg-gray-500 text-blue-50 font-bold"
+                          variant={"secondary"}
                         >
-                          <span>Temperatura</span>
-                          <span>30 graus</span>{" "}
-                        </Button>
-                        <Button
-                          className="flex justify-between"
-                          variant={"link"}
-                        >
-                          <span>velocidade do vento</span>
-                          <span>30km/h</span>{" "}
-                        </Button>
-                        <Button
-                          className="flex justify-between"
-                          variant={"link"}
-                        >
-                          <span>Direção do vento</span>
-                          <span>NE</span>{" "}
-                        </Button>
-                        <Button
-                          className="flex justify-between"
-                          variant={"link"}
-                        >
-                          <span>Cod Meteorológico</span>
-                          <span>80</span>{" "}
-                        </Button>
-                      </div>
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction className="bg-red-800 hover:bg-red-500">
-                      Deletar
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </>
-          ))}
-        </TableBody>
-      </Table>
-      <PaginationBar />
-    </div>
+                          22/02/2025
+                        </Badge>
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        <div className="grid gap-1">
+                          <Button
+                            className="flex justify-between"
+                            variant={"link"}
+                          >
+                            <span>Temperatura</span>
+                            <span>30 graus</span>{" "}
+                          </Button>
+                          <Button
+                            className="flex justify-between"
+                            variant={"link"}
+                          >
+                            <span>velocidade do vento</span>
+                            <span>30km/h</span>{" "}
+                          </Button>
+                          <Button
+                            className="flex justify-between"
+                            variant={"link"}
+                          >
+                            <span>Direção do vento</span>
+                            <span>NE</span>{" "}
+                          </Button>
+                          <Button
+                            className="flex justify-between"
+                            variant={"link"}
+                          >
+                            <span>Cod Meteorológico</span>
+                            <span>80</span>{" "}
+                          </Button>
+                        </div>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction className="bg-red-800 hover:bg-red-500">
+                        Deletar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            ))}
+          </TableBody>
+        </Table>
+        <PaginationBar />
+      </div>
+    </>
   );
 }

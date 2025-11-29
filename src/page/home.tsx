@@ -5,8 +5,9 @@ import { TableDashboard } from "../components/table-dashboad";
 export function Home() {
   return (
     <>
+      {/* <CardLogin/> */}
       <div className="grid gap-5 p-5 items-center align-middle justify-center">
-        <div className="md:flex gap-5 md:items-stretch grid justify-center">
+        <div className="md:flex gap-5 md:items-center grid justify-center">
           <div className="flex-1 h-full w-full">
             <CardUser />
           </div>

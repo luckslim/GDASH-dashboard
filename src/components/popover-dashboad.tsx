@@ -68,9 +68,9 @@ export function PopoverDashboad() {
             <Input placeholder="Insira seu novo nome de usuário" />
             <Input placeholder="Insira sua nova senha" />
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction className="bg-blue-500 hover:bg-blue-400">
-                Continue
+                Salvar
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

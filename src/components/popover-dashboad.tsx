@@ -34,8 +34,13 @@ import {
 } from "./ui/drawer";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircleIcon } from "lucide-react";
+import Cookies from "js-cookie"
 
 export function PopoverDashboad() {
+  function handleLoggout(){
+    Cookies.remove("token")
+    window.location.reload()
+  }
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -119,7 +124,7 @@ export function PopoverDashboad() {
             </div>
           </DrawerContent>
         </Drawer>
-        <Button variant={"destructive"}>Loggout</Button>
+        <Button onClick={handleLoggout} variant={"destructive"}>Loggout</Button>
       </PopoverContent>
     </Popover>
   );

@@ -2,135 +2,234 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "./ui/card";
-
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useState } from "react";
+import { ArrowArcLeftIcon } from "@phosphor-icons/react";
+
+const bodyValidationSchema = z.object({
+  name: z.string(),
+  userName: z.string(),
+  email: z.email("Por favor, insira Um Email válido."),
+  password: z.string().min(8, "A senha deve conter o mínimo de 8 caracteres"),
+});
+
+type BodyValidationSchema = z.infer<typeof bodyValidationSchema>;
 
 export function CardLogin() {
+  const [stateRegister, SetStateRegister] = useState<boolean>(false);
+
+  const [errorState, SetErrorState] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<BodyValidationSchema>({
+    resolver: zodResolver(bodyValidationSchema),
+  });
+
+  function handleStateRegister() {
+    SetStateRegister(!stateRegister);
+  }
+
+  function handleLogin({ email, password }: BodyValidationSchema) {
+    axios
+      .post("http://localhost:3333/authenticate", {
+        email,
+        password,
+      })
+      .then((response) => {
+        console.log(response)
+        const tokenId = response.data.access_token;
+        const cookie = Cookies.set("token", tokenId, { expires: 1 });
+        window.location.reload();
+        return cookie;
+      })
+      .catch((error) => {
+        const { message } = error.response.data;
+        SetErrorState(message);
+      });
+  }
+  function handleRegister({
+    name,
+    userName,
+    email,
+    password,
+  }: BodyValidationSchema) {
+    axios
+      .post("http://localhost:3333/account", {
+        name,
+        userName,
+        email,
+        password,
+      })
+      .then((response) => {
+        window.location.reload();
+        return response;
+      })
+      .catch((error) => {
+        const { message } = error.response.data;
+        return message;
+      });
+  }
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm  bg-repeat z-50">
-      <Card className="w-full max-w-sm shadow-2xl border border-white/20 bg-white/10 backdrop-blur-md">
-        <CardHeader>
-          <CardTitle className="text-white">
-            Faça o login com sua conta
-          </CardTitle>
-          <CardDescription className="text-gray-200">
-            Para acessar o Dashboard é necessário realizar o login
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="flex flex-col gap-6 text-white">
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="text-white">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@exemplo.com"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password" className="text-white">
-                    Senha
+      {stateRegister === false ? (
+        <Card className="w-full max-w-sm shadow-2xl border border-white/20 bg-white/10 backdrop-blur-md">
+          <CardHeader>
+            <CardTitle className="text-white">
+              Faça o login com sua conta
+            </CardTitle>
+            <CardDescription className="text-gray-200">
+              Para acessar o Dashboard é necessário realizar o login
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(handleLogin)}>
+              <div className="flex flex-col gap-6 text-white">
+                <small className="text-orange-500">{errorState}</small>
+                <div className="grid gap-2">
+                  <Label htmlFor="email" className="text-white">
+                    Email
                   </Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm text-gray-200 underline-offset-4 hover:underline"
+                  <Input
+                    id="email"
+                    placeholder="m@exemplo.com"
+                    {...register("email")}
+                  />
+                  {errors.email && (
+                    <small className="text-red-400">
+                      {errors.email.message}
+                    </small>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <div className="flex items-center">
+                    <Label htmlFor="password" className="text-white">
+                      Senha
+                    </Label>
+                    <a
+                      href="#"
+                      className="ml-auto inline-block text-sm text-gray-200 underline-offset-4 hover:underline"
+                    >
+                      esqueceu sua senha?
+                    </a>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    {...register("password")}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Button type="submit" className="w-full">
+                    Login
+                  </Button>
+                  <Button
+                    onClick={handleStateRegister}
+                    variant="outline"
+                    className="w-full text-black"
                   >
-                    esqueceu sua senha?
-                  </a>
+                    Crie sua conta
+                  </Button>
                 </div>
-                <Input id="password" type="password" required />
               </div>
-            </div>
-          </form>
-        </CardContent>
-
-        <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full">
-            Login
-          </Button>
-          <Button variant="outline" className="w-full">
-            Crie sua conta
-          </Button>
-        </CardFooter>
-      </Card>
-
-      {/* CREATE USER */}
-{/* 
-      <Card className="w-full max-w-sm shadow-2xl border border-white/20 bg-white/10 backdrop-blur-md">
-        <CardHeader>
-          <CardTitle className="text-white">Crie sua conta</CardTitle>
-          <CardDescription className="text-gray-200">
-            Para acessar o Dashboard é necessário criar uma conta
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="flex flex-col gap-6 text-white">
-              <div className="grid gap-2">
-                <Label htmlFor="name" className="text-white">
-                  nome
-                </Label>
-                <Input
-                  id="name"
-                  type="name"
-                  placeholder="m@exemplo.com"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="useName" className="text-white">
-                  nome de usuário
-                </Label>
-                <Input
-                  id="useName"
-                  type="useName"
-                  placeholder="m@exemplo.com"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="text-white">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@exemplo.com"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password" className="text-white">
-                    Senha
+            </form>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="w-full max-w-sm shadow-2xl border border-white/20 bg-white/10 backdrop-blur-md">
+          <CardHeader>
+            <CardTitle className="text-white">Crie sua conta</CardTitle>
+            <CardDescription className="text-gray-200">
+              Para acessar o Dashboard é necessário criar uma conta
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(handleRegister)}>
+              <div className="flex flex-col gap-6 text-white">
+                <div className="grid gap-2">
+                  <Label htmlFor="name" className="text-white">
+                    nome
                   </Label>
+                  <Input
+                    id="name"
+                    type="name"
+                    placeholder="m@exemplo.com"
+                    {...register("name")}
+                  />
                 </div>
-                <Input id="password" type="password" required />
+                <div className="grid gap-2">
+                  <Label htmlFor="useName" className="text-white">
+                    nome de usuário
+                  </Label>
+                  <Input
+                    id="useName"
+                    type="useName"
+                    placeholder="m@exemplo.com"
+                    {...register("userName")}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="email" className="text-white">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    placeholder="m@exemplo.com"
+                    {...register("email")}
+                  />
+                  {errors.email && (
+                    <small className="text-orange-500">
+                      {errors.email.message}
+                    </small>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <div className="flex items-center">
+                    <Label htmlFor="password" className="text-white">
+                      Senha
+                    </Label>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    {...register("password")}
+                  />{" "}
+                  {errors.password && (
+                    <small className="text-orange-500">
+                      {errors.password.message}
+                    </small>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <Button type="submit" className="w-full">
+                    Cadastre-se
+                  </Button>
+                  <Button
+                    onClick={handleStateRegister}
+                    variant="link"
+                    className="w-full text-white"
+                  >
+                    <ArrowArcLeftIcon /> voltar
+                  </Button>
+                </div>
               </div>
-            </div>
-          </form>
-        </CardContent>
-
-        <CardFooter className="flex-col gap-2">
-          <Button variant={"secondary"} className="w-full">
-            Criar conta
-          </Button>
-          <Button  variant="link" type="submit" className="text-amber-50  w-full">
-            <ArrowArcLeftIcon/>voltar
-          </Button>
-        </CardFooter>
-      </Card> */}
+            </form>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

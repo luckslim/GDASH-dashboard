@@ -34,21 +34,56 @@ import {
 } from "./ui/drawer";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircleIcon } from "lucide-react";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import z from "zod";
+
+const userValidationSchema = z.object({
+  user: z.string(),
+  userName: z.string(),
+  email: z.email(),
+});
+
+type UserValidationSchema = z.infer<typeof userValidationSchema>;
 
 export function PopoverDashboad() {
-  function handleLoggout(){
-    Cookies.remove("token")
-    window.location.reload()
+  const [data, SetData] = useState<UserValidationSchema>({
+    user: "",
+    email: "",
+    userName: "",
+  });
+  const token = Cookies.get("token");
+  useEffect(() => {
+    if (!token) return;
+    axios
+      .get("http://localhost:3333/get/account", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        const { userPresenter } = response.data;
+        const parsedUsePresenter = userValidationSchema.parse(userPresenter);
+        SetData(parsedUsePresenter);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  }, [token]);
+  function handleLoggout() {
+    Cookies.remove("token");
+    window.location.reload();
   }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <CardTitle className="flex items-center justify-around p-2 text-white bg-blue-400 rounded-bl-lg rounded-tr-lg">
           <UserCircleIcon size={42} weight="fill" />
           <div className="grid gap-2 ">
-            <p>UserName</p>
-            <small>Email@email.com</small>
+            <p>{data.userName}</p>
+            <small>{data.email}</small>
           </div>
         </CardTitle>
       </PopoverTrigger>
@@ -116,15 +151,21 @@ export function PopoverDashboad() {
                 </AlertDescription>
               </Alert>
               <DrawerFooter>
-                <Button className="bg-red-600 hover:bg-red-500 text-red-50 font-bold">Sim, Exclua essa conta.</Button>
+                <Button className="bg-red-600 hover:bg-red-500 text-red-50 font-bold">
+                  Sim, Exclua essa conta.
+                </Button>
                 <DrawerClose asChild>
-                  <Button variant="outline">Não, Desejo continuar o acesso</Button>
+                  <Button variant="outline">
+                    Não, Desejo continuar o acesso
+                  </Button>
                 </DrawerClose>
               </DrawerFooter>
             </div>
           </DrawerContent>
         </Drawer>
-        <Button onClick={handleLoggout} variant={"destructive"}>Loggout</Button>
+        <Button onClick={handleLoggout} variant={"destructive"}>
+          Loggout
+        </Button>
       </PopoverContent>
     </Popover>
   );

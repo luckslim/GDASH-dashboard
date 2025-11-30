@@ -14,11 +14,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
-import { ArrowArcLeftIcon } from "@phosphor-icons/react";
+import { ArrowArcLeftIcon, SealCheckIcon } from "@phosphor-icons/react";
 
 const bodyValidationSchema = z.object({
-  name: z.string(),
-  userName: z.string(),
+  name: z.string().min(8, "o nome deve conter o mínimo de 8 caracteres"),
+  userName: z
+    .string()
+    .min(8, "nome de usuário deve conter o mínimo de 8 caracteres"),
   email: z.email("Por favor, insira Um Email válido."),
   password: z.string().min(8, "A senha deve conter o mínimo de 8 caracteres"),
 });
@@ -26,6 +28,8 @@ const bodyValidationSchema = z.object({
 type BodyValidationSchema = z.infer<typeof bodyValidationSchema>;
 
 export function CardLogin() {
+  const [messageState, SetMessageState] = useState<string | null>(null);
+
   const [stateRegister, SetStateRegister] = useState<boolean>(false);
 
   const [errorState, SetErrorState] = useState<string | null>(null);
@@ -49,7 +53,7 @@ export function CardLogin() {
         password,
       })
       .then((response) => {
-        console.log(response)
+        console.log(response);
         const tokenId = response.data.access_token;
         const cookie = Cookies.set("token", tokenId, { expires: 1 });
         window.location.reload();
@@ -60,6 +64,7 @@ export function CardLogin() {
         SetErrorState(message);
       });
   }
+
   function handleRegister({
     name,
     userName,
@@ -74,11 +79,14 @@ export function CardLogin() {
         password,
       })
       .then((response) => {
-        window.location.reload();
+        handleStateRegister();
+        SetMessageState("Registrado com sucesso!");
+        SetErrorState(null);
         return response;
       })
       .catch((error) => {
         const { message } = error.response.data;
+        SetErrorState(message);
         return message;
       });
   }
@@ -96,6 +104,12 @@ export function CardLogin() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {messageState && (
+              <small className="flex items-center justify-center gap-1 text-green-500 font-bold p-2 bg-green-100 rounded-lg">
+                <SealCheckIcon size={22} />
+                {messageState}
+              </small>
+            )}
             <form onSubmit={handleSubmit(handleLogin)}>
               <div className="flex flex-col gap-6 text-white">
                 <small className="text-orange-500">{errorState}</small>
@@ -155,6 +169,7 @@ export function CardLogin() {
             <CardDescription className="text-gray-200">
               Para acessar o Dashboard é necessário criar uma conta
             </CardDescription>
+            <small className="text-orange-500">{errorState}</small>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(handleRegister)}>
@@ -166,20 +181,30 @@ export function CardLogin() {
                   <Input
                     id="name"
                     type="name"
-                    placeholder="m@exemplo.com"
+                    placeholder="john Doe"
                     {...register("name")}
                   />
+                  {errors.name && (
+                    <small className="text-orange-500">
+                      {errors.name.message}
+                    </small>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="useName" className="text-white">
                     nome de usuário
                   </Label>
                   <Input
-                    id="useName"
-                    type="useName"
-                    placeholder="m@exemplo.com"
+                    id="userName"
+                    type="userName"
+                    placeholder="User_exemplo"
                     {...register("userName")}
-                  />
+                  />{" "}
+                  {errors.userName && (
+                    <small className="text-orange-500">
+                      {errors.userName.message}
+                    </small>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email" className="text-white">

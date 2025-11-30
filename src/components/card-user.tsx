@@ -9,17 +9,16 @@ import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
 
 import { DiamondIcon, MapPinIcon } from "@phosphor-icons/react";
 import { Spinner } from "./ui/spinner";
-//import { Skeleton } from "./ui/skeleton";
+
 
 export function CardUser() {
+
   return (
     <div className="grid gap-5 justify-center items-center">
       <Card className="w-full">
         <CardHeader>
           <PopoverDashboad />
           <CardDescription>Bem Vindo ao Dashboad!</CardDescription>
-          {/* <Skeleton className="p-8 bg-gray-200 rounded-lg" />
-          <Skeleton className="p-2 bg-gray-200 rounded-lg w-[200px]" /> */}
         </CardHeader>
         <CardContent>
           <div className="grid items-center gap-2">
@@ -33,8 +32,6 @@ export function CardUser() {
               height="250px"
               loading="lazy"
             ></iframe>
-            {/* <Skeleton className="p-2 bg-gray-200 rounded-lg w-[200px]" />
-            <Skeleton className="p-20 bg-gray-200 rounded-lg" /> */}
           </div>
         </CardContent>
       </Card>

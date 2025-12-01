@@ -38,3 +38,67 @@ export async function handleDataTable(page: number): Promise<ClimateResponse> {
 
   return { climates };
 }
+export async function handleExportCSV(page: number) {
+  
+  const token = Cookies.get("token");
+
+  const response = await axios.get(
+    `http://localhost:3333/get/${page}/climate/weather/export/csv`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    }
+  );
+  const blob = new Blob([response.data], { type: "text/csv" });
+
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+
+  // Nome do arquivo
+  link.download = `climates-page-${page}.csv`;
+
+  // dispara o "download"
+  link.click();
+
+  // limpa o link da memória
+  window.URL.revokeObjectURL(url);
+}
+
+export async function handleExportXLSX(page: number) {
+  const token = Cookies.get("token");
+
+  const response = await axios.get(
+    `http://localhost:3333/get/${page}/climate/weather/export/xlsx`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "arraybuffer",
+    }
+  );
+
+  console.log(response.data)
+
+  const blob = new Blob([response.data], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+
+  // Nome do arquivo
+  link.download = `climates-page-${page}.xlsx`;
+
+  // dispara o "download"
+  link.click();
+
+  // limpa o link da memória
+  window.URL.revokeObjectURL(url);
+}

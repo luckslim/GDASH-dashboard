@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useClimates } from "../lib/use-query-climates";
 import { ArrowRightIcon } from "lucide-react";
 import { dateFormatter } from "../lib/date-formater";
+import { handleExportCSV, handleExportXLSX } from "../lib/data-table";
 
 export interface Climate {
   id: string;
@@ -53,10 +54,10 @@ export function TableDashboard() {
     <div className="grid gap-5">
       <div className="flex items-center justify-end">
         <ButtonGroup>
-          <Button variant={"outline"}>
+          <Button onClick={()=>handleExportCSV(page)} variant={"outline"}>
             Baixar arquivo CSV <FileArrowDownIcon size={32} />
           </Button>
-          <Button variant={"outline"}>
+          <Button onClick={()=>handleExportXLSX(page)} variant={"outline"}>
             Baixar arquivo XLSX <FileArrowDownIcon size={32} />
           </Button>
         </ButtonGroup>
@@ -64,22 +65,24 @@ export function TableDashboard() {
       <div className="grid gap-3">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[200px]">Data</TableHead>
-              <TableHead className="w-[200px]">Temperatura</TableHead>
-              <TableHead className="w-[200px]">Velocidade do Vento</TableHead>
-              <TableHead className="w-[200px]">Direção do Vento</TableHead>
-              <TableHead className="text-right">Código meteorológico</TableHead>
+            <TableRow className="bg-gray-100">
+              <TableHead className="w-[200px] text-center">Data</TableHead>
+              <TableHead className="w-[200px] text-center">Temperatura</TableHead>
+              <TableHead className="w-[200px] text-center">Velocidade do Vento</TableHead>
+              <TableHead className="w-[200px] text-center">Direção do Vento</TableHead>
+              <TableHead className="w-[200px] text-center ">Código meteorológico</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data?.climates.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="font-medium">{dateFormatter.format(new Date(item.timeStamp))}</TableCell>
-                <TableCell>{item.temperature}</TableCell>
-                <TableCell>{item.windSpeed}</TableCell>
-                <TableCell>{item.windDirection}</TableCell>
-                <TableCell className="text-right">{item.weatherCode}</TableCell>
+                <TableCell className="font-w-[200px] text-center">
+                  {`${dateFormatter.format(new Date(item.timeStamp))}H`}
+                </TableCell>
+                <TableCell className="w-[200px] text-center">{`${item.temperature} (°C)`}</TableCell>
+                <TableCell className="w-[200px] text-center">{`${item.windSpeed} km/h`}</TableCell>
+                <TableCell className="w-[200px] text-center">{item.windDirection}</TableCell>
+                <TableCell className="w-[200px] text-center">{item.weatherCode}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -91,7 +94,7 @@ export function TableDashboard() {
             <ArrowLeftIcon size={32} />
           </Button>
           <Button onClick={handleNextPage} variant={"outline"}>
-            <ArrowRightIcon/>
+            <ArrowRightIcon />
           </Button>
         </ButtonGroup>
       </div>

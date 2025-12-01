@@ -1,4 +1,3 @@
-"use client";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -12,64 +11,85 @@ import {
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import type { ChartConfig } from "./ui/chart";
 import { TimerIcon } from "@phosphor-icons/react";
-//import { Skeleton } from "./ui/skeleton";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
 
-export const description = "A stacked area chart";
-
-const chartData = [
-  { hour: "00:00", temperatura: 22, velocidadeVento: 10 },
-  { hour: "01:00", temperatura: 21, velocidadeVento: 12 },
-  { hour: "02:00", temperatura: 20, velocidadeVento: 11 },
-  { hour: "03:00", temperatura: 19, velocidadeVento: 9 },
-  { hour: "04:00", temperatura: 18, velocidadeVento: 8 },
-  { hour: "05:00", temperatura: 19, velocidadeVento: 10 },
-  { hour: "06:00", temperatura: 20, velocidadeVento: 12 },
-  { hour: "07:00", temperatura: 22, velocidadeVento: 14 },
-  { hour: "08:00", temperatura: 24, velocidadeVento: 15 },
-  { hour: "09:00", temperatura: 26, velocidadeVento: 16 },
-  { hour: "10:00", temperatura: 27, velocidadeVento: 17 },
-  { hour: "11:00", temperatura: 29, velocidadeVento: 18 },
-  { hour: "12:00", temperatura: 30, velocidadeVento: 20 },
-  { hour: "13:00", temperatura: 31, velocidadeVento: 21 },
-  { hour: "14:00", temperatura: 32, velocidadeVento: 22 },
-  { hour: "15:00", temperatura: 31, velocidadeVento: 20 },
-  { hour: "16:00", temperatura: 30, velocidadeVento: 18 },
-  { hour: "17:00", temperatura: 28, velocidadeVento: 17 },
-  { hour: "18:00", temperatura: 26, velocidadeVento: 15 },
-  { hour: "19:00", temperatura: 25, velocidadeVento: 14 },
-  { hour: "20:00", temperatura: 24, velocidadeVento: 12 },
-  { hour: "21:00", temperatura: 23, velocidadeVento: 11 },
-  { hour: "22:00", temperatura: 23, velocidadeVento: 10 },
-  { hour: "23:00", temperatura: 22, velocidadeVento: 9 },
-];
+interface RawClimateItem {
+  props: {
+    timeStamp: string | number | Date;
+    temperature: number;
+    windSpeed: number;
+  };
+}
+interface DataCharts {
+  hour: string;
+  temperature: number;
+  windSpeed: number;
+}
 
 const chartConfig = {
-  temperatura: {
-    label: "Temperatura (°C)",
+  temperature: {
+    label: "Temperature (°C)",
     color: "var(--chart-1)",
   },
-  velocidadeVento: {
+  windSpeed: {
     label: "Velocidade do Vento (km/h)",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
 export function ChartDashboard() {
+  const [data, SetData] = useState<DataCharts[]>([]);
+
+  const page = 1;
+
+  async function handleRequestDataCharts() {
+    const token = Cookies.get("token");
+    const response = await axios.get(
+      `http://localhost:3333/get/${page}/climate`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const { climate } = response.data;
+
+    return climate;
+  }
+
+  useEffect(() => {
+    async function handleDataCharts() {
+      const rawData = await handleRequestDataCharts();
+      const formatted: DataCharts[] = (rawData as RawClimateItem[]).map(
+        (item: RawClimateItem) => ({
+          hour: new Date(item.props.timeStamp)
+            .toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+            })
+            .concat("H"),
+          temperature: item.props.temperature,
+          windSpeed: item.props.windSpeed,
+        })
+      );
+      SetData([...formatted].reverse());
+    }
+    handleDataCharts();
+  }, []);
+
+  console.log(data);
   return (
     <Card>
       <CardHeader>
-        {/* <Skeleton className="p-2 bg-gray-200 rounded-lg w-[200px]" />
-        <Skeleton className="p-2 bg-gray-200 rounded-lg w-[300px]" />
-        <Skeleton className="p-2 bg-gray-200 rounded-lg w-[200px]" /> */}
-        <CardTitle>Temperatura e Velocidade do Vento</CardTitle>
+        <CardTitle>Temperature e Velocidade do Vento</CardTitle>
         <CardDescription>gráfico referente a cada hora</CardDescription>
       </CardHeader>
       <CardContent>
-        {/* <Skeleton className="p-50 bg-gray-200 rounded-lg" /> */}
         <ChartContainer config={chartConfig}>
           <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={data}
             margin={{
               left: 12,
               right: 12,
@@ -87,7 +107,7 @@ export function ChartDashboard() {
               content={<ChartTooltipContent indicator="dot" />}
             />
             <Area
-              dataKey="temperatura"
+              dataKey="temperature"
               type="natural"
               fill="var(--chart-1)"
               fillOpacity={0.4}
@@ -95,7 +115,7 @@ export function ChartDashboard() {
               stackId="a"
             />
             <Area
-              dataKey="velocidadeVento"
+              dataKey="windSpeed"
               type="natural"
               fill="var(--chart-2)"
               fillOpacity={0.4}

@@ -8,11 +8,28 @@ import {
 import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
 
 import { DiamondIcon, MapPinIcon } from "@phosphor-icons/react";
-import { Spinner } from "./ui/spinner";
-
-
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useState } from "react";
 export function CardUser() {
+  const [stateAI, SetStateAI] = useState(null);
 
+  async function handleReportAI() {
+    const token = Cookies.get("token");
+    const response = await axios.get(
+      "http://localhost:3333/get/1/report/AI/climate",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const { report } = response.data;
+
+    SetStateAI(report);
+
+    return report;
+  }
   return (
     <div className="grid gap-5 justify-center items-center">
       <Card className="w-full">
@@ -46,20 +63,15 @@ export function CardUser() {
           className="grid gap-5 items-center justify-center"
           value="item-1"
         >
-          <AccordionTrigger className="flex items-center justify-around p-2 rounded-full text-white bg-black shadow-[0_0_15px_rgb(255, 255, 255)] animate-pulse hover:shadow-[0_0_25px_#6cf5ff] hover:brightness-125 hover:animate-none transition-all duration-300">
+          <AccordionTrigger
+            onClick={handleReportAI}
+            className="flex items-center justify-around p-2 rounded-full text-white bg-black shadow-[0_0_15px_rgb(255, 255, 255)] animate-pulse hover:shadow-[0_0_25px_#6cf5ff] hover:brightness-125 hover:animate-none transition-all duration-300"
+          >
             <DiamondIcon size={32} weight="fill" />
             Previsão do tempo com IA
           </AccordionTrigger>
           <AccordionContent className="text-center text-gray-500">
-            <div className="flex gap-2 items-center justify-center text-lg">
-              <Spinner />
-              criando previsão...
-            </div>
-            <p className="text-gray-500 font-bold ">
-              Our flagship product combines cutting-edge technology with sleek
-              design. Built with premium materials, it offers unparalleled
-              performance and reliability.
-            </p>
+            <p className="text-gray-500 font-bold ">{stateAI}</p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

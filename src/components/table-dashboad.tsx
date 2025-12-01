@@ -62,7 +62,7 @@ export function TableDashboard() {
           </Button>
         </ButtonGroup>
       </div>
-      <div className="grid gap-3">
+      <div className="grid gap-3 h-[250px]">
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-100">

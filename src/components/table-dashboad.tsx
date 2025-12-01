@@ -1,15 +1,3 @@
-import { PaginationBar } from "./pagination-bar-dashboard";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -19,62 +7,58 @@ import {
   TableRow,
 } from "./ui/table";
 import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
 import { ButtonGroup } from "./ui/button-group";
-import { FileArrowDownIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, FileArrowDownIcon } from "@phosphor-icons/react";
+import { useState } from "react";
+import { useClimates } from "../lib/use-query-climates";
+import { ArrowRightIcon } from "lucide-react";
+import { dateFormatter } from "../lib/date-formater";
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
+export interface Climate {
+  id: string;
+  timeStamp: string;
+  temperature: number;
+  windSpeed: number;
+  windDirection: string;
+  weatherCode: string;
+}
+
+export interface ClimateResponse {
+  climates: Climate[];
+}
 
 export function TableDashboard() {
+  const [page, SetPage] = useState(1);
+
+  const { data } = useClimates(page);
+
+  const totalItems = data?.climates?.length ?? 0;
+
+  if (data && totalItems === 0 && page > 1) {
+    SetPage((p) => p - 1);
+  }
+
+  function handleNextPage() {
+    if (totalItems > 0) {
+      SetPage((p) => p + 1);
+    }
+  }
+
+  function handlePreviousPage() {
+    if (page > 1) {
+      SetPage((p) => p - 1);
+    }
+  }
   return (
-    <>
+    <div className="grid gap-5">
       <div className="flex items-center justify-end">
         <ButtonGroup>
-          <Button variant={"outline"}>Baixar arquivo CSV <FileArrowDownIcon size={32} /></Button>
-          <Button variant={"outline"}>Baixar arquivo XLSX <FileArrowDownIcon size={32} /></Button>
+          <Button variant={"outline"}>
+            Baixar arquivo CSV <FileArrowDownIcon size={32} />
+          </Button>
+          <Button variant={"outline"}>
+            Baixar arquivo XLSX <FileArrowDownIcon size={32} />
+          </Button>
         </ButtonGroup>
       </div>
       <div className="grid gap-3">
@@ -89,79 +73,28 @@ export function TableDashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invoices.map((invoice) => (
-              <>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <TableRow key={invoice.invoice}>
-                      <TableCell className="font-medium">
-                        {invoice.invoice}
-                      </TableCell>
-                      <TableCell>{invoice.paymentStatus}</TableCell>
-                      <TableCell>{invoice.paymentMethod}</TableCell>
-                      <TableCell>NE</TableCell>
-                      <TableCell className="text-right">80</TableCell>
-                    </TableRow>
-                  </AlertDialogTrigger>
-                  <AlertDialogTrigger asChild></AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle className="flex justify-between">
-                        Dados do Clima{" "}
-                        <Badge
-                          className="bg-gray-500 text-blue-50 font-bold"
-                          variant={"secondary"}
-                        >
-                          22/02/2025
-                        </Badge>
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        <div className="grid gap-1">
-                          <Button
-                            className="flex justify-between"
-                            variant={"link"}
-                          >
-                            <span>Temperatura</span>
-                            <span>30 graus</span>{" "}
-                          </Button>
-                          <Button
-                            className="flex justify-between"
-                            variant={"link"}
-                          >
-                            <span>velocidade do vento</span>
-                            <span>30km/h</span>{" "}
-                          </Button>
-                          <Button
-                            className="flex justify-between"
-                            variant={"link"}
-                          >
-                            <span>Direção do vento</span>
-                            <span>NE</span>{" "}
-                          </Button>
-                          <Button
-                            className="flex justify-between"
-                            variant={"link"}
-                          >
-                            <span>Cod Meteorológico</span>
-                            <span>80</span>{" "}
-                          </Button>
-                        </div>
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction className="bg-red-800 hover:bg-red-500">
-                        Deletar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
+            {data?.climates.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-medium">{dateFormatter.format(new Date(item.timeStamp))}</TableCell>
+                <TableCell>{item.temperature}</TableCell>
+                <TableCell>{item.windSpeed}</TableCell>
+                <TableCell>{item.windDirection}</TableCell>
+                <TableCell className="text-right">{item.weatherCode}</TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>
-        <PaginationBar />
       </div>
-    </>
+      <div className="flex items-center justify-end">
+        <ButtonGroup>
+          <Button onClick={handlePreviousPage} variant={"outline"}>
+            <ArrowLeftIcon size={32} />
+          </Button>
+          <Button onClick={handleNextPage} variant={"outline"}>
+            <ArrowRightIcon/>
+          </Button>
+        </ButtonGroup>
+      </div>
+    </div>
   );
 }

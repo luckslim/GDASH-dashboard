@@ -12,7 +12,6 @@ import { CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -36,13 +35,19 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import z from "zod";
+import { Axios } from "../lib/axios";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const userValidationSchema = z.object({
-  user: z.string(),
-  userName: z.string(),
-  email: z.email(),
+  user: z.string().min(1, "Seu nome deve ter mais caracteres"),
+  userName: z.string().min(1, "Seu nome de usuário deve ter mais caracteres"),
+  email: z.email("Insira um e-mail válido").optional(),
+  password: z
+    .string()
+    .min(8, "Sua senha deve ter no mínimo 8 caracteres")
+    .optional(),
 });
 
 type UserValidationSchema = z.infer<typeof userValidationSchema>;
@@ -53,15 +58,65 @@ export function PopoverDashboad() {
     email: "",
     userName: "",
   });
+
   const token = Cookies.get("token");
-  useEffect(() => {
-    if (!token) return;
-    axios
-      .get("http://localhost:3333/get/account", {
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserValidationSchema>({
+    resolver: zodResolver(userValidationSchema),
+  });
+
+  async function handleEditUser({
+    user,
+    userName,
+    password,
+  }: UserValidationSchema) {
+    const response = await Axios.post(
+      "edit/account",
+      {
+        name: user,
+        userName,
+        email: data.email,
+        password,
+      },
+      {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      }
+    );
+    window.location.reload()
+    return response.data;
+  }
+
+  async function handleDeleteUser() {
+    const response = await Axios.post(
+      "delete/account",
+      {
+        email: data.email,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    Cookies.remove("token");
+    window.location.reload();
+    return response;
+  }
+
+  useEffect(() => {
+    if (!token) return;
+    Axios.get("/get/account", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         const { userPresenter } = response.data;
         const parsedUsePresenter = userValidationSchema.parse(userPresenter);
@@ -71,6 +126,7 @@ export function PopoverDashboad() {
         console.log(error.response.data);
       });
   }, [token]);
+
   function handleLoggout() {
     Cookies.remove("token");
     window.location.reload();
@@ -90,29 +146,61 @@ export function PopoverDashboad() {
       <PopoverContent className="grid items-center gap-1 w-80">
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button className="flex gap-2 items-center " variant={"link"}>
+            <Button className="flex gap-2 items-center " variant="link">
               <PencilSimpleIcon color="blue" size={32} />
               Editar usuário
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogTrigger asChild></AlertDialogTrigger>
+
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Editar Dados de Usuário</AlertDialogTitle>
               <AlertDialogDescription>
-                Essa ação permite modificações dos dados permanentimente, todas
-                as modificações entram em vigor assim que tudo for salvo.
+                Modifique seus dados abaixo.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <Input placeholder="Insira seu novo nome" />
-            <Input placeholder="Insira seu novo nome de usuário" />
-            <Input placeholder="Insira sua nova senha" />
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction className="bg-blue-500 hover:bg-blue-400">
-                Salvar
-              </AlertDialogAction>
-            </AlertDialogFooter>
+
+            {/* FORMULÁRIO CORRETO AQUI */}
+            <form
+              onSubmit={handleSubmit(handleEditUser)}
+              className="grid gap-3 mt-3"
+            >
+              <Input placeholder="Insira seu novo nome" {...register("user")} />
+              {errors.user && (
+                <small className="text-orange-500">{errors.user.message}</small>
+              )}
+              <Input
+                placeholder="Insira seu novo nome de usuário"
+                {...register("userName")}
+              />
+              {errors.userName && (
+                <small className="text-orange-500">
+                  {errors.userName.message}
+                </small>
+              )}
+
+              <Input
+                placeholder="Insira sua nova senha"
+                {...register("password")}
+              />
+              {errors.password && (
+                <small className="text-orange-500">
+                  {errors.password.message}
+                </small>
+              )}
+
+              <AlertDialogFooter>
+                <AlertDialogCancel type="button">Cancelar</AlertDialogCancel>
+
+                {/* ESTE botão envia o formulário */}
+                <Button
+                  type="submit"
+                  className="bg-blue-500 hover:bg-blue-400 text-white"
+                >
+                  Salvar
+                </Button>
+              </AlertDialogFooter>
+            </form>
           </AlertDialogContent>
         </AlertDialog>
         <Drawer>
@@ -151,7 +239,10 @@ export function PopoverDashboad() {
                 </AlertDescription>
               </Alert>
               <DrawerFooter>
-                <Button className="bg-red-600 hover:bg-red-500 text-red-50 font-bold">
+                <Button
+                  onClick={handleDeleteUser}
+                  className="bg-red-600 hover:bg-red-500 text-red-50 font-bold"
+                >
                   Sim, Exclua essa conta.
                 </Button>
                 <DrawerClose asChild>

@@ -8,16 +8,16 @@ import {
 import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
 
 import { DiamondIcon, MapPinIcon } from "@phosphor-icons/react";
-import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
+import { Axios } from "../lib/axios";
 export function CardUser() {
   const [stateAI, SetStateAI] = useState(null);
 
   async function handleReportAI() {
     const token = Cookies.get("token");
-    const response = await axios.get(
-      "http://localhost:3333/get/1/report/AI/climate",
+    const response = await Axios.get(
+      "/get/1/report/AI/climate",
       {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -11,16 +11,14 @@ import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
 import { ArrowArcLeftIcon, SealCheckIcon } from "@phosphor-icons/react";
+import { Axios } from "../lib/axios";
 
 const bodyValidationSchema = z.object({
-  name: z.string().min(8, "o nome deve conter o mínimo de 8 caracteres"),
-  userName: z
-    .string()
-    .min(8, "nome de usuário deve conter o mínimo de 8 caracteres"),
+  name: z.string().optional(),
+  userName: z.string().optional(),
   email: z.email("Por favor, insira Um Email válido."),
   password: z.string().min(8, "A senha deve conter o mínimo de 8 caracteres"),
 });
@@ -42,18 +40,18 @@ export function CardLogin() {
     resolver: zodResolver(bodyValidationSchema),
   });
 
-  function handleStateRegister() {
+  async function handleStateRegister() {
     SetStateRegister(!stateRegister);
   }
 
-  function handleLogin({ email, password }: BodyValidationSchema) {
-    axios
-      .post("http://localhost:3333/authenticate", {
+  async function handleLogin({ email, password }: BodyValidationSchema) {
+    console.log(email, password);
+    await Axios
+      .post("/authenticate", {
         email,
         password,
       })
       .then((response) => {
-        console.log(response);
         const tokenId = response.data.access_token;
         const cookie = Cookies.set("token", tokenId, { expires: 1 });
         window.location.reload();
@@ -65,14 +63,14 @@ export function CardLogin() {
       });
   }
 
-  function handleRegister({
+  async function handleRegister({
     name,
     userName,
     email,
     password,
   }: BodyValidationSchema) {
-    axios
-      .post("http://localhost:3333/account", {
+    await Axios
+      .post("/account", {
         name,
         userName,
         email,
@@ -183,6 +181,7 @@ export function CardLogin() {
                     type="name"
                     placeholder="john Doe"
                     {...register("name")}
+                    required
                   />
                   {errors.name && (
                     <small className="text-orange-500">
@@ -196,9 +195,9 @@ export function CardLogin() {
                   </Label>
                   <Input
                     id="userName"
-                    type="userName"
                     placeholder="User_exemplo"
                     {...register("userName")}
+                    required
                   />{" "}
                   {errors.userName && (
                     <small className="text-orange-500">

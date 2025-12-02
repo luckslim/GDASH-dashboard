@@ -1,6 +1,6 @@
-import axios from "axios";
 import Cookies from "js-cookie";
 import type { ClimateResponse, Climate } from "../components/table-dashboad";
+import { Axios } from "./axios";
 
 interface RawClimate {
   _id: { value: string };
@@ -16,8 +16,8 @@ interface RawClimate {
 export async function handleDataTable(page: number): Promise<ClimateResponse> {
   const token = Cookies.get("token");
 
-  const response = await axios.get(
-    `http://localhost:3333/get/${page}/climate`,
+  const response = await Axios.get(
+    `/get/${page}/climate`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -42,8 +42,8 @@ export async function handleExportCSV(page: number) {
   
   const token = Cookies.get("token");
 
-  const response = await axios.get(
-    `http://localhost:3333/get/${page}/climate/weather/export/csv`,
+  const response = await Axios.get(
+    `/get/${page}/climate/weather/export/csv`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -72,8 +72,8 @@ export async function handleExportCSV(page: number) {
 export async function handleExportXLSX(page: number) {
   const token = Cookies.get("token");
 
-  const response = await axios.get(
-    `http://localhost:3333/get/${page}/climate/weather/export/xlsx`,
+  const response = await Axios.get(
+    `/get/${page}/climate/weather/export/xlsx`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -82,7 +82,6 @@ export async function handleExportXLSX(page: number) {
     }
   );
 
-  console.log(response.data)
 
   const blob = new Blob([response.data], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

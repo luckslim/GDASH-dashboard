@@ -12,8 +12,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import type { ChartConfig } from "./ui/chart";
 import { TimerIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Cookies from "js-cookie";
+import { Axios } from "../lib/axios";
 
 interface RawClimateItem {
   props: {
@@ -46,8 +46,8 @@ export function ChartDashboard() {
 
   async function handleRequestDataCharts() {
     const token = Cookies.get("token");
-    const response = await axios.get(
-      `http://localhost:3333/get/${page}/climate`,
+    const response = await Axios.get(
+      `/get/${page}/climate`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -77,8 +77,6 @@ export function ChartDashboard() {
     }
     handleDataCharts();
   }, []);
-
-  console.log(data);
   return (
     <Card>
       <CardHeader>

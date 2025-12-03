@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const Axios = axios.create({
-  baseURL: 'http://localhost:3333',
-  timeout: 1000,
+  baseURL: "https://gdash-api.onrender.com",
+  timeout: 10000,
   headers: {'X-Custom-Header': 'foobar'}
 });
